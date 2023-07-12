@@ -62,7 +62,11 @@ const UploadBody = () => {
       setIsLoading(true); // Set loading state to true
 
       axios
-        .post(`${baseUrl}/api/upload`, formData)
+        .post(`${baseUrl}/api/upload`, formData,{
+          "Access-Control-Allow-Origin": "*" ,
+          "Access-Control-Allow-Methods": "POST, PUT, PATCH, GET, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers": "*"
+        })
         .then((response) => {
           const data = response.data;
           setResult({
@@ -111,7 +115,7 @@ const UploadBody = () => {
     <span className="upload-body">
       {contextHolder}
 
-      <Card className="upload-card">
+      <Card style={{ width: "50vw" }}>
         <Space direction="vertical" size="middle" style={{ display: "flex" }}>
           <h3>File Upload</h3>
 

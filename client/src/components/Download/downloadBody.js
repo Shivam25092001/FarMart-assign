@@ -4,9 +4,11 @@ import baseUrl from "../../API_BASE_URL.js";
 import { Card, Button } from "antd";
 
 const DownloadBody = ({ shortUrl }) => {
+  console.log(shortUrl);
   const [fileData, setFileData] = useState(null);
 
-  useEffect(() => {
+
+  useEffect(() => {    
     const fetchFileData = async () => {
       try {
         const response = await axios.get(
@@ -27,7 +29,7 @@ const DownloadBody = ({ shortUrl }) => {
 
 
     fetchFileData();
-  }, [ shortUrl ]);
+  }, [shortUrl]);
 
   return(
       fileData ? (

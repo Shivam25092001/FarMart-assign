@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 
 function Home(){
     const { shortUrl } = useParams();
-    console.log(shortUrl);
+
     return (
         <div className="home">
             <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
