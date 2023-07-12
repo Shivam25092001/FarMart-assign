@@ -8,14 +8,12 @@ import Home from './components/Home/home.js';
 
 function App() {
   return (
-    <div className="App">
       <Router>
         <Routes>
           <Route exact path="/get/:shortUrl" element={<Home />} />
           <Route exact path="/" element={<Home />} />
         </Routes>
       </Router>
-    </div>
   );
 }
 

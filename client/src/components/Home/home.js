@@ -1,3 +1,4 @@
+import './home.css';
 import React from 'react';
 import Head from '../Header/header.js';
 import UploadBody from '../Upload/uploadBody.js';
