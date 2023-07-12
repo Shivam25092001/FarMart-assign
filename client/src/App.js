@@ -11,8 +11,8 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
+          <Route exact path="/get/:shortUrl" element={<Home />} />
           <Route exact path="/" element={<Home />} />
-          <Route exact path="/:shortUrl" element={<Home />} />
         </Routes>
       </Router>
     </div>
