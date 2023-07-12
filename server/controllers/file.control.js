@@ -1,27 +1,9 @@
 import admin from "firebase-admin";
 import File from "../models/file.model.js";
 import crypto from "crypto";
-import dotenv from "dotenv";
-dotenv.config();
 import Credentials from "../farmart-assign-firebase-adminsdk-s0o0v-8c40d35328.json" assert { type: "json" };
 
 
-// admin.initializeApp({
-//     credential: admin.credential.cert({
-//         "type": "service_account",
-//         "project_id": process.env.FIREBASE_PROJECT_ID,
-//         "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
-//         "private_key": process.env.FIREBASE_PRIVATE_KEY,
-//         "client_email": process.env.FIREBASE_CLIENT_EMAIL,
-//         "client_id": process.env.FIREBASE_CLIENT_ID,
-//         "auth_uri": process.env.FIREBASE_AUTH_URI,
-//         "token_uri": process.env.FIREBASE_TOKEN_URI,
-//         "auth_provider_x509_cert_url": process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
-//         "client_x509_cert_url": process.env.FIREBASE_CLIENT_X509_CERT_URL,
-//         "universe_domain": process.env.FIREBASE_UNIVERSE_DOMAIN
-//       }),
-//     storageBucket: "farmart-assign.appspot.com"
-// })
 admin.initializeApp({
     credential: admin.credential.cert(Credentials), 
     storageBucket: "farmart-assign.appspot.com"
@@ -32,7 +14,7 @@ const getFilePublicUrl = async (bucket, fileName)=>{
     try {
       const [url] = await bucket.file(fileName).getSignedUrl({
         action: 'read',
-        expires: '03-01-2500' // Adjust the expiry date as desired
+        expires: '03-01-2026' // Adjust the expiry date as desired
       });
       return url;
     } catch (error) {
