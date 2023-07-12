@@ -5,7 +5,6 @@ const { Header } = Layout;
 
 const headerStyle = {
   height: 100,
-  paddingInline: 50,
   lineHeight: "64px",
   backgroundColor: "#FFFFFF",
 };

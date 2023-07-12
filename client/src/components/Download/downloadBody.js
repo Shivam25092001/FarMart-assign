@@ -14,7 +14,7 @@ const DownloadBody = ({ shortUrl }) => {
       );
       setFileData(response.data);
     } catch (error) {
-      if (error.code == "ERR_NETWORK") {
+      if (error.code === "ERR_NETWORK") {
         console.log(error);
         return alert(
           "Server is not running. Please start the server and try again."

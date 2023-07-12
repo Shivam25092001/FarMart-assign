@@ -14,8 +14,19 @@
   border-color: #1890ff;
 }
 
+.upload-card{
+  width: 50vw;
+}
+
 
 .upload-body > svg{
   width: 3em;
   height: 3em;
+}
+
+
+@media screen and (max-width: 1110px) {
+  .upload-card{
+    width: 90vw;
+  }
 }

@@ -111,7 +111,7 @@ const UploadBody = () => {
     <span className="upload-body">
       {contextHolder}
 
-      <Card style={{ width: "50vw" }}>
+      <Card className="upload-card">
         <Space direction="vertical" size="middle" style={{ display: "flex" }}>
           <h3>File Upload</h3>
 
