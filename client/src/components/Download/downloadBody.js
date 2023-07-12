@@ -4,30 +4,30 @@ import baseUrl from "../../API_BASE_URL.js";
 import { Card, Button } from "antd";
 
 const DownloadBody = ({ shortUrl }) => {
-  console.log(shortUrl);
   const [fileData, setFileData] = useState(null);
 
-  const fetchFileData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/api/file/${shortUrl}`
-      );
-      setFileData(response.data);
-    } catch (error) {
-      if (error.code === "ERR_NETWORK") {
-        console.log(error);
-        return alert(
-          "Server is not running. Please start the server and try again."
-        );
-      }
-      const response = error.response;
-      response ? setFileData(response.data) : console.log(error);
-    }
-  };
-
   useEffect(() => {
+    const fetchFileData = async () => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/api/file/${shortUrl}`
+        );
+        setFileData(response.data);
+      } catch (error) {
+        if (error.code === "ERR_NETWORK") {
+          console.log(error);
+          return alert(
+            "Server is not running. Please start the server and try again."
+          );
+        }
+        const response = error.response;
+        response ? setFileData(response.data) : console.log(error);
+      }
+    };
+
+    
     fetchFileData();
-  }, [fetchFileData]);
+  }, []);
 
   return(
       fileData ? (
