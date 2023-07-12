@@ -1,0 +1,21 @@
+.upload-body{
+  display: flex;
+  justify-content: center;
+}
+
+.upload-container {
+  border: 2px dashed #ccc;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.upload-container:hover {
+  border-color: #1890ff;
+}
+
+
+.upload-body > svg{
+  width: 3em;
+  height: 3em;
+}
