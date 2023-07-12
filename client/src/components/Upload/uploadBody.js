@@ -1,6 +1,7 @@
 import "./uploadBody.css";
 import React, { useState } from "react";
 import axios from "axios";
+import baseUrl from "../../API_BASE_URL.js";
 import {
   Typography,
   Upload,
@@ -61,7 +62,7 @@ const UploadBody = () => {
       setIsLoading(true); // Set loading state to true
 
       axios
-        .post("http://localhost:5000/api/upload", formData)
+        .post(`${baseUrl}/api/upload`, formData)
         .then((response) => {
           const data = response.data;
           setResult({

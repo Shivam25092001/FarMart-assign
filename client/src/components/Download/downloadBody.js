@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import baseUrl from "../../API_BASE_URL.js";
 import { Card, Button } from "antd";
 
 const DownloadBody = ({ shortUrl }) => {
@@ -9,7 +10,7 @@ const DownloadBody = ({ shortUrl }) => {
   const fetchFileData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/file/${shortUrl}`
+        `${baseUrl}/api/file/${shortUrl}`
       );
       setFileData(response.data);
     } catch (error) {
