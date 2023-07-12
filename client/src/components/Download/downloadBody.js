@@ -25,9 +25,9 @@ const DownloadBody = ({ shortUrl }) => {
       }
     };
 
-    
+
     fetchFileData();
-  }, []);
+  }, [ shortUrl ]);
 
   return(
       fileData ? (
