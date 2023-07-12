@@ -1,7 +1,9 @@
 import admin from "firebase-admin";
 import File from "../models/file.model.js";
 import crypto from "crypto";
-import Credentials from "../farmart-assign-firebase-adminsdk-s0o0v-8c40d35328.json" assert { type: "json" };
+import fs from 'fs';
+const Credentials = JSON.parse(fs.readFileSync('./farmart-assign-firebase-adminsdk-s0o0v-8c40d35328.json'));
+// import Credentials from "../farmart-assign-firebase-adminsdk-s0o0v-8c40d35328.json" with {type: 'json' };
 
 
 admin.initializeApp({
