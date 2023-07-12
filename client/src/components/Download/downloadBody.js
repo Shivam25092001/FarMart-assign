@@ -27,7 +27,7 @@ const DownloadBody = ({ shortUrl }) => {
 
   useEffect(() => {
     fetchFileData();
-  }, []);
+  }, [fetchFileData]);
 
   return(
       fileData ? (
