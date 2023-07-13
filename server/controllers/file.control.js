@@ -1,123 +1,138 @@
-import admin from "firebase-admin";
+import admin from "../firebase-connect.js";
 import File from "../models/file.model.js";
 import crypto from "crypto";
-import fs from 'fs';
-const Credentials = JSON.parse(fs.readFileSync('./farmart-assign-firebase-adminsdk-s0o0v-8c40d35328.json'));
-// import Credentials from "../farmart-assign-firebase-adminsdk-s0o0v-8c40d35328.json" with {type: 'json' };
+import asyncCatch from "../middlewares/catchAsync.js";
+import ErrorHandler from "../utils/errorHandler.js";
 
-
-admin.initializeApp({
-    credential: admin.credential.cert(Credentials), 
-    storageBucket: "farmart-assign.appspot.com"
-})
-
-
-const getFilePublicUrl = async (bucket, fileName)=>{
-    try {
-      const [url] = await bucket.file(fileName).getSignedUrl({
-        action: 'read',
-        expires: '03-01-2026' // Adjust the expiry date as desired
-      });
-      return url;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+const getFilePublicUrl = async (bucket, fileName) => {
+  try {
+    const [url] = await bucket.file(fileName).getSignedUrl({
+      action: "read",
+      expires: "03-01-2026", // Adjust the expiry date as desired
+    });
+    return url;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };
 
+const upload_file = asyncCatch(async (req, res, next) => {
 
-const upload_file = async(req, res) => {
-    try{
-        const file = req.file;
-        if(!file){
-            return res.status(400).json({
-                success: false,
-                error: "No file uploaded"
-            });
-        }
+  const file = req.file;
+  const owner_id = req.user ? req.user.id : null;
+  if (!file) {
+    return res.status(400).json({
+      success: false,
+      error: "No file uploaded",
+    });
+  }
 
-        const new_file_name = Date.now() + "-" + file.originalname;
-        const expirationDate = new Date();
-        expirationDate.setDate(expirationDate.getDate() + 7); // Set the expiration date to 7 days from now
+  const new_file_name = Date.now() + "-" + file.originalname;
+  const expirationDate = new Date();
+  expirationDate.setDate(expirationDate.getDate() + 7); // Set the expiration date to 7 days from now
 
-        const bucket = admin.storage().bucket();
-        const fileUpload = bucket.file(new_file_name);
-        const blobStream = fileUpload.createWriteStream({
-            metadata:{
-                contentType: file.mimetype,
-                expires: expirationDate.toISOString()
-            }
-        });
+  const bucket = admin.storage().bucket();
+  const fileUpload = bucket.file(new_file_name);
+  const blobStream = fileUpload.createWriteStream({
+    metadata: {
+      contentType: file.mimetype,
+      expires: expirationDate.toISOString(),
+    },
+  });
 
-        blobStream.on("error", (error) => {
-            console.log(error);
-            return res.status(500).json({
-                success: false,
-                error: 'Server error'
-            });
-        });
+  blobStream.on("error", (error) => {
+    console.log(error);
+    return next(new ErrorHandler("Cloud Server error", 400));
+  });
 
-        blobStream.on("finish", async () => {
-            // Get the public URL for the uploaded file
-            const publicUrl = await getFilePublicUrl(bucket, fileUpload.name);
-        
-            //Generate short link
-            const shortUrl = crypto.createHash('md5').update(publicUrl).digest('hex');
+  blobStream.on("finish", async () => {
+    // Get the public URL for the uploaded file
+    const publicUrl = await getFilePublicUrl(bucket, fileUpload.name);
 
-            //Save file metadata to mongoDB
-            const newFile = new File({
-                shortUrl,
-                originalname: file.originalname,
-                filename: fileUpload.name,
-                fileSize: file.size,
-                fileType: file.mimetype,
-                fileUrl: publicUrl,
-            });
+    //Generate short link
+    const shortUrl = crypto.createHash("md5").update(publicUrl).digest("hex");
 
-            await newFile.save();
-            
-            res.json({
-                success: true,
-                newFile,
-            });
-        });
+    //Save file metadata to mongoDB
+    const newFile = new File({
+      shortUrl,
+      originalname: file.originalname,
+      filename: fileUpload.name,
+      fileSize: file.size,
+      fileType: file.mimetype,
+      fileUrl: publicUrl,
+      owner_id : owner_id
+    });
 
-        blobStream.end(file.buffer);
+    await newFile.save();
+
+    res.json({
+      success: true,
+      newFile,
+    });
+  });
+
+  blobStream.end(file.buffer);
+});
+
+
+//get file from shortUrl
+const get_file = asyncCatch( async (req, res, next) => {
+
+    const file = await File.findOne({ shortUrl: req.params.shortUrl });
+    if (!file) {
+        return next(new ErrorHandler("File not found!", 404));
     }
-    catch (error){
-        console.log("Error in file upload" + error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
-    }
-};
+
+    return res.status(200).json({
+      success: true,
+      filename: file.originalname,
+      publicUrl: file.fileUrl,
+    });
+
+});
 
 
-const get_file = async(req, res) => {
-    try{
-        const file = await File.findOne({shortUrl: req.params.shortUrl});
-        if(!file){
-            return res.status(404).json({
-                success: false,
-                error: "File not found"
-            });
-        }
+//get all files of a user
+const all_files = asyncCatch( async(req, res, next) => {
 
-        return res.status(200).json({
-            success: true,
-            filename: file.originalname,
-            publicUrl: file.fileUrl
-        });
-    }
-    catch(error){
-        console.log("Error in get file" + error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
-    }
-};
+  const files = await File.find({ 'owner_id': req.user.id });
+
+  res.status(200).json({
+      success: true,
+      files
+  })
+});
 
 
-export {upload_file, get_file};
+//delete a file
+const delete_file = asyncCatch(async (req, res, next)=>{
+  let file  = await File.findOne({ shortUrl: req.params.id });
+
+  if(!file){
+    return next(new ErrorHandler("File not found!", 404));
+  }
+
+  if(!file.owner_id){
+    return next(new ErrorHandler("You are not authorized to delete this file", 404));
+  }
+
+  if(file.owner_id.toString() !== req.user.id.toString()){
+    return next(new ErrorHandler("You are not authorized to delete this file", 401));
+  }
+
+  // Remove file from Firestore
+  const storage = firebaseAdmin.storage();
+  await storage.bucket().file(file.firebaseStoragePath).delete();
+
+  // Delete file entry from mongoDB
+  await File.deleteOne({ shortUrl: req.params.id });
+
+  res.status(200).json({
+    success : true,
+    message : "File deleted successfully"
+  })
+});
+
+
+export { upload_file, get_file, all_files, delete_file };
