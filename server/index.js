@@ -12,12 +12,14 @@ process.on("uncaughtException", (err)=>{
   });
 
 
+//Assigning port to server
 const port = process.env.PORT || 8000;
-
 const server = app.listen(port, () => {
     console.log(`listening on port http://localhost:${port}`);
 });
 
+
+//Connecting to MongoDB
 mongoose.set("strictQuery", false);
 mongoose
   .connect(process.env.DB_URL)

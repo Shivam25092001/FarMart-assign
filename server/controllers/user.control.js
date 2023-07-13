@@ -19,7 +19,7 @@ const Register = asyncCatch( async (req, res, next) => {
 
 
 
-//Login
+//Login User
 const Login = asyncCatch( async (req, res, next)=>{
     const {email, password} = req.body;
 
