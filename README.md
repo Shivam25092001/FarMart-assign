@@ -3,7 +3,7 @@
 File Upload and Short Link Generation Platform
 
 ```href
-https://farmart-assign.web.app/
+https://fast-zhare.web.app/
 ```
 
 *API*: ```https://file-share-api-cmfs.onrender.com```
